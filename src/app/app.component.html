@@ -1,0 +1,81 @@
+<div class="app">
+  <!-- Search Bar -->
+  <div class="search-container">
+    <div class="search-logo">
+      <h1>User Search</h1>
+      <p class="search-subtitle">Find users by first name, last name, or SSN</p>
+    </div>
+
+    <div class="search-bar-wrapper">
+      <div class="search-bar">
+        <input
+          type="text"
+          class="search-input"
+          [(ngModel)]="searchQuery"
+          (keydown.enter)="onSearch()"
+          placeholder="Enter first name, last name, or SSN (min 3 characters)"
+        />
+        <button class="search-button" (click)="onSearch()">
+          🔍
+        </button>
+      </div>
+      <div class="search-error" *ngIf="error">{{ error }}</div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-container" *ngIf="filteredUsers.length || isLoading">
+    <div class="results-controls">
+      <div class="results-info">
+        <span>{{ filteredUsers.length }} user{{ filteredUsers.length !== 1 ? 's' : '' }} found</span>
+      </div>
+
+      <div class="controls-group">
+        <div class="control-item">
+          <label class="form-label">Sort by:</label>
+          <select class="form-control sort-select" [(ngModel)]="sortBy" (change)="applyFilters()">
+            <option value="firstName-asc">First Name (A-Z)</option>
+            <option value="firstName-desc">First Name (Z-A)</option>
+            <option value="age-asc">Age (Ascending)</option>
+            <option value="age-desc">Age (Descending)</option>
+          </select>
+        </div>
+
+        <div class="control-item">
+          <label class="form-label">Filter by Role:</label>
+          <select class="form-control role-filter" [(ngModel)]="roleFilter" (change)="applyFilters()">
+            <option value="All">All Roles</option>
+            <option *ngFor="let role of distinctRoles">
+              {{ role }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="user-grid" *ngIf="filteredUsers.length">
+      <div class="user-card" *ngFor="let user of viewUsers">
+        <img [src]="user.avatar" [alt]="user.firstName + ' ' + user.lastName" class="user-avatar" />
+        <h3 class="user-name">{{ user.firstName }} {{ user.lastName }}</h3>
+        <span class="user-role user-role--{{ user.role.toLowerCase() }}">{{ user.role }}</span>
+        <div class="user-details">
+          <div class="user-detail"><span class="user-detail-label">Age:</span><span>{{ user.age }}</span></div>
+          <div class="user-detail"><span class="user-detail-label">Email:</span><span>{{ user.email }}</span></div>
+          <div class="user-detail"><span class="user-detail-label">Phone:</span><span>{{ user.phone }}</span></div>
+          <div class="user-detail"><span class="user-detail-label">Location:</span><span>{{ user.location }}</span></div>
+        </div>
+      </div>
+      <div class="search-error" *ngIf="viewError">{{ viewError }}</div>
+    </div>
+
+    <div class="loading-spinner" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Searching users...</p>
+    </div>
+
+    <div class="no-results" *ngIf="!isLoading && filteredUsers.length === 0">
+      <h3>No users found</h3>
+      <p>Try adjusting your search criteria or filters</p>
+    </div>
+  </div>
+</div>
